@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications</title>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-xl font-medium text-gray-800">Notifications <span id="unreadCount" class="bg-red-500 text-black px-2 py-1 rounded-full"></span></h1>
+      <button id="markAllReadButton" class="text-blue-600 hover:underline">Mark all as read</button>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <ul id="notificationList" class="divide-y divide-gray-200">
+        </ul>
+    </div>
+  </div>
+
+  <script>
+    const markAllReadButton = document.getElementById('markAllReadButton');
+    const notificationList = document.getElementById('notificationList');
+    const unreadCountElement = document.getElementById('unreadCount');
+    let unreadCount = 0; // Start with zero unread notifications
+    function createNotificationElement(name, message, time, isRead) {
+        const listItem = document.createElement('li');
+        listItem.className = `p-4 hover:bg-gray-200 ${isRead ? '' : 'bg-blue-50'}`;
+
+        const avatarUrl = `https://ui-avatars.com/api/?name=${name.replace(' ', '+')}`;
+
+        listItem.innerHTML = `
+          <div class="flex items-center">
+            <div class="flex-shrink-0 mr-3">
+              <img class="w-8 h-8 rounded-full" src="${avatarUrl}" alt="${name} avatar">
+            </div>
+            <div class="flex-grow">
+              <div class="text-base ${isRead ? 'font-medium' : 'font-semibold'} text-gray-800">${name} ${message}</div>
+              <div class="text-sm text-gray-500">${time}</div>
+            </div>
+          </div>
+        `;
+        return listItem;
+    }
+
+    const notifications = [
+        ["Mark Webber", "reacted to your recent post", "Imago", false],
+        ["Angela Gray", "followed you", "5mago", false],
+        ["Jacob Thompson", "has joined your group Chess Club", "1 day ago", false],
+        ["Rizky Hasanuddin", "sent you a private message", "5 days ago", true],
+        ["Sarah Dorsey", "liked your comment on her post", "1 week ago", true]
+    ];
+    // Update the unread count and display it
+    function updateUnreadCount() {
+      const unreadNotifications = notificationList.querySelectorAll('li.bg-blue-50');
+      unreadCount = unreadNotifications.length;
+      unreadCountElement.textContent = unreadCount > 0 ? unreadCount : '3'; // Hide if zero
+    }
+    updateUnreadCount(); // Initial update
+
+    notifications.forEach(notificationData => {
+        const notificationElement = createNotificationElement(...notificationData);
+        if (!notificationData[3]) { // If not read, increase count
+            unreadCount++;
+        }
+        console.log(unreadCount)
+        notificationList.appendChild(notificationElement);
+    });
+
+    markAllReadButton.addEventListener('click', () => {
+      const notifications = notificationList.querySelectorAll('li');
+      notifications.forEach(notification => {
+        notification.classList.remove('bg-blue-50');
+        notification.querySelector('.text-base').classList.remove('font-semibold');
+        notification.querySelector('.text-base').classList.add('font-medium');
+      });
+      unreadCount = 0; // Reset unread count
+      updateUnreadCount(); // Update the display
+    });
+  </script>
+</body>
+</html>
